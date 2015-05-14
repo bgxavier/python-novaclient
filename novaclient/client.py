@@ -33,6 +33,7 @@ from oslo.utils import importutils
 from oslo.utils import netutils
 import requests
 from requests import adapters
+from novaclient.openstack.common import importutils
 
 try:
     import json
@@ -45,6 +46,7 @@ from novaclient import exceptions
 from novaclient.i18n import _
 from novaclient import service_catalog
 
+osprofiler_web = importutils.try_import("osprofiler.web")
 
 class TCPKeepAliveAdapter(adapters.HTTPAdapter):
     """The custom adapter used to set TCP Keep-Alive on all connections."""
@@ -347,6 +349,8 @@ class HTTPClient(object):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
         kwargs['headers']['User-Agent'] = self.USER_AGENT
         kwargs['headers']['Accept'] = 'application/json'
+	if osprofiler_web:
+            kwargs['headers'].update(osprofiler_web.get_trace_id_headers())
         if 'body' in kwargs:
             kwargs['headers']['Content-Type'] = 'application/json'
             kwargs['data'] = json.dumps(kwargs['body'])

@@ -56,6 +56,9 @@ from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
 from novaclient import utils
 from novaclient.v2 import shell as shell_v2
+from novaclient.openstack.common import importutils
+
+osprofiler_profiler = importutils.try_import("osprofiler.profiler")
 
 DEFAULT_OS_COMPUTE_API_VERSION = "2"
 DEFAULT_NOVA_ENDPOINT_TYPE = 'publicURL'
@@ -431,6 +434,19 @@ class OpenStackComputeShell(object):
         parser.add_argument('--bypass_url',
                             help=argparse.SUPPRESS)
 
+	if osprofiler_profiler:
+            parser.add_argument('--profile',
+                                metavar='HMAC_KEY',
+                                help='HMAC key to use for encrypting context '
+                                'data for performance profiling of operation. '
+                                'This key should be the value of HMAC key '
+                                'configured in OSprofiler middleware in '
+                                'cinder, it specified in paste configuration '
+                                'file at /etc/nova/api-paste.ini. '
+                                'Without key the profiling will not be '
+                                'triggered even if OSprofiler is enabled '
+                                'on server side.')
+
         # The auth-system-plugins might require some extra options
         novaclient.auth_plugin.load_auth_system_opts(parser)
 
@@ -577,7 +593,9 @@ class OpenStackComputeShell(object):
         parser = self.get_base_parser()
         (options, args) = parser.parse_known_args(argv)
         self.setup_debugging(options.debug)
-
+        profile = osprofiler_profiler and options.profile
+        if profile:
+            osprofiler_profiler.init(options.profile)
         # Discover available auth plugins
         novaclient.auth_plugin.discover_auth_systems()
 
