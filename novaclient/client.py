@@ -33,7 +33,6 @@ from oslo.utils import importutils
 from oslo.utils import netutils
 import requests
 from requests import adapters
-from novaclient.openstack.common import importutils
 
 try:
     import json
