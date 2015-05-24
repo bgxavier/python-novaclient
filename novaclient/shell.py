@@ -36,6 +36,7 @@ from keystoneclient.auth.identity import v3 as identity
 from keystoneclient import session as ksession
 from oslo.utils import encodeutils
 from oslo.utils import strutils
+from oslo.utils import importutils
 import pkg_resources
 import six
 
@@ -56,7 +57,6 @@ from novaclient.i18n import _
 from novaclient.openstack.common import cliutils
 from novaclient import utils
 from novaclient.v2 import shell as shell_v2
-from novaclient.openstack.common import importutils
 
 osprofiler_profiler = importutils.try_import("osprofiler.profiler")
 
