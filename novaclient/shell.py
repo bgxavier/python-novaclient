@@ -596,6 +596,10 @@ class OpenStackComputeShell(object):
         profile = osprofiler_profiler and options.profile
         if profile:
             osprofiler_profiler.init(options.profile)
+            trace_id = osprofiler_profiler.get().get_base_id()
+            print("Profiling trace ID: %s" % trace_id)
+            print("To display trace use next command:\n"
+                "osprofiler trace show --html %s " % trace_id)
         # Discover available auth plugins
         novaclient.auth_plugin.discover_auth_systems()
 
